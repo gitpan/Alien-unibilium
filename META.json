@@ -14,25 +14,33 @@
    },
    "name" : "Alien-unibilium",
    "prereqs" : {
-      "configure" : {
-         "requires" : {
-            "ExtUtils::PkgConfig" : "0",
-            "Module::Build" : "0"
-         }
-      },
-      "runtime" : {
+      "build" : {
          "requires" : {
             "ExtUtils::PkgConfig" : "0",
             "File::Basename" : "0",
             "File::Path" : "2.07",
             "File::Spec" : "0"
          }
+      },
+      "configure" : {
+         "requires" : {
+            "ExtUtils::PkgConfig" : "0",
+            "File::Basename" : "0",
+            "File::Path" : "2.07",
+            "File::Spec" : "0",
+            "Module::Build" : "0"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "ExtUtils::PkgConfig" : "0"
+         }
       }
    },
    "provides" : {
       "Alien::unibilium" : {
          "file" : "lib/Alien/unibilium.pm",
-         "version" : "0.01"
+         "version" : "0.02"
       }
    },
    "release_status" : "stable",
@@ -41,5 +49,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.01"
+   "version" : "0.02"
 }

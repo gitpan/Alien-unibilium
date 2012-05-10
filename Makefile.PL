@@ -2,5 +2,5 @@
     use Module::Build::Compat 0.02;
     use lib 'inc';
     Module::Build::Compat->run_build_pl(args => \@ARGV);
-    require Alien::unibilium::Module::Build;
-    Module::Build::Compat->write_makefile(build_class => 'Alien::unibilium::Module::Build');
+    require Alien::make::Module::Build;
+    Module::Build::Compat->write_makefile(build_class => 'Alien::make::Module::Build');

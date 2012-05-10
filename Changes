@@ -1,4 +1,8 @@
 Revision history for Alien-unibilium
 
+0.02    CHANGES:
+         * GNU libtool is called 'glibtool' on Darwin
+         * Build dependencies need to be listed as configure_requires
+
 0.01    First version, released on an unsuspecting world.
 

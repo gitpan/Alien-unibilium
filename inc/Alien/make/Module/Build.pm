@@ -1,4 +1,4 @@
-package Alien::unibilium::Module::Build;
+package Alien::make::Module::Build;
 
 use strict;
 use warnings;
@@ -16,6 +16,9 @@ use constant SRCDIR => "src";
 use constant MAKE => ( $^O eq "linux" )  ? "make" :
                      ( $^O eq "darwin" ) ? "gnumake" :
                                            "gmake";
+
+# GNU libtool is called 'glibtool' on Darwin
+use constant MAKEARGS => ( ( $^O eq "darwin" ) ? ( "LIBTOOL=glibtool" ) : () );
 
 __PACKAGE__->add_property( 'tarball' );
 __PACKAGE__->add_property( 'pkgconfig_module' );
@@ -42,6 +45,17 @@ sub in_srcdir
       die "Unable to chdir to srcdir - $!";
 
    shift->();
+}
+
+sub make_in_srcdir
+{
+   my $self = shift;
+   my @args = @_;
+
+   $self->in_srcdir( sub {
+      system( MAKE, MAKEARGS, @args ) == 0 or
+         die "Unable to make - $!";
+   } );
 }
 
 sub ACTION_src
@@ -79,15 +93,14 @@ sub ACTION_code
    unless( -f $buildstamp ) {
       $self->depends_on( 'src' );
 
-      $self->in_srcdir( sub {
-         system( MAKE ) == 0 or
-            die "Unable to make - $!";
-      } );
+      $self->make_in_srcdir( () );
 
-      $self->in_srcdir( sub {
-         system( MAKE, "install", "LIBDIR=$libdir", "INCDIR=$incdir", "MAN3DIR=$mandir", "MAN7DIR=$mandir" ) == 0 or
-            die "Unable to make install - $!";
-      } );
+      $self->make_in_srcdir( "install",
+         "LIBDIR=$libdir",
+         "INCDIR=$incdir",
+         "MAN3DIR=$mandir",
+         "MAN7DIR=$mandir",
+      );
 
       open( my $stamp, ">", $buildstamp ) or die "Unable to touch .build-stamp file - $!";
    }
@@ -143,10 +156,7 @@ sub ACTION_test
 
    $self->depends_on( "code" );
 
-   $self->in_srcdir( sub {
-      system( MAKE, "test" ) == 0 or
-         die "Unable to make test - $!";
-   } );
+   $self->make_in_srcdir( "test" );
 }
 
 sub ACTION_clean
@@ -154,10 +164,7 @@ sub ACTION_clean
    my $self = shift;
 
    if( -d $self->_srcdir ) {
-      $self->in_srcdir( sub {
-         system( MAKE, "clean" ) == 0 or
-            die "Unable to make clean - $!";
-      } );
+      $self->make_in_srcdir( "clean" );
    }
 
    unlink( $self->_stampfile( "build" ) );
