@@ -5,7 +5,7 @@
 
 package Alien::unibilium;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 use ExtUtils::PkgConfig;
 my $libdir = '@LIBDIR@';
@@ -21,7 +21,7 @@ This CPAN distribution installs a local copy of F<unibilium>, primarily for
 use by the F<libtermkey> or the L<Term::Terminfo> distribution. It is not
 intended to be used directly.
 
-This module bundles F<unibilium> version v1.0.0.
+This module bundles F<unibilium> version v1.0.1.
 
 =head1 METHODS
 

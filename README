@@ -6,7 +6,7 @@ DESCRIPTION
     use by the libtermkey or the Term::Terminfo distribution. It is not
     intended to be used directly.
 
-    This module bundles unibilium version v1.0.0.
+    This module bundles unibilium version v1.0.1.
 
 METHODS
     This module behaves like ExtUtils::PkgConfig, responding to the same

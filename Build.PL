@@ -6,7 +6,7 @@ use Alien::make::Module::Build;
 
 my $build = Alien::make::Module::Build->new(
    module_name => 'Alien::unibilium',
-   tarball => 'unibilium-v1.0.0.tar.gz',
+   tarball => 'unibilium-v1.0.1.tar.gz',
    pkgconfig_module => "unibilium",
 
    configure_requires => {
