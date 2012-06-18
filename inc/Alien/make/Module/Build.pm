@@ -115,7 +115,7 @@ sub ACTION_code
       my $pkgconfig_module = $self->pkgconfig_module;
 
       my %replace = (
-         LIBDIR           => $libdir,
+         LIBDIR           => $real_libdir,
          PKGCONFIG_MODULE => $pkgconfig_module,
       );
 

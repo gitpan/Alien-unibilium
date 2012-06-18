@@ -1,5 +1,9 @@
 Revision history for Alien-unibilium
 
+0.04    BUGFIXES:
+         * Bake real installation libdir into built .pm file rather than
+           build-time blib/ dir
+
 0.03    CHANGES:
          * Updated for unibilium v1.0.1
 
