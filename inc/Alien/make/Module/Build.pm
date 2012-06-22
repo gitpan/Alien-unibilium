@@ -88,6 +88,8 @@ sub ACTION_code
    my $incdir = File::Spec->catdir( $libdir, "include" );
    my $mandir = File::Spec->catdir( $blib, "libdoc" );
 
+   my $pkgconfig_module = $self->pkgconfig_module;
+
    my $buildstamp = $self->_stampfile( "build" );
 
    unless( -f $buildstamp ) {
@@ -103,6 +105,20 @@ sub ACTION_code
       );
 
       open( my $stamp, ">", $buildstamp ) or die "Unable to touch .build-stamp file - $!";
+
+      # Now hack the .pc file to put ${libdir}-relative paths in it
+      my $pcfile = "$libdir/pkgconfig/$pkgconfig_module.pc";
+      if( -f $pcfile ) {
+         open my $in, "<", $pcfile or die "Cannot open $pcfile for reading - $!";
+         open my $out, ">", "$pcfile.new" or die "Cannot open $pcfile.new for writing - $!";
+
+         while( <$in> ) {
+            s{\Q$libdir\E}{\${libdir}}g;
+            print { $out } $_;
+         }
+
+         rename "$pcfile.new", $pcfile or die "Cannot rename $pcfile.new to $pcfile - $!";
+      }
    }
 
    my @module_file = split m/::/, $self->module_name . ".pm";
@@ -110,12 +126,8 @@ sub ACTION_code
    my $dstfile = File::Spec->catfile( $blib, "lib", @module_file );
 
    unless( $self->up_to_date( $srcfile, $dstfile ) ) {
-      my $real_libdir = $self->install_destination( "arch" );
-
-      my $pkgconfig_module = $self->pkgconfig_module;
 
       my %replace = (
-         LIBDIR           => $real_libdir,
          PKGCONFIG_MODULE => $pkgconfig_module,
       );
 

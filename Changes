@@ -1,5 +1,11 @@
 Revision history for Alien-unibilium
 
+0.05    BUGFIXES:
+         * Don't hardcode libdir into .pm file, discover it by @INC search
+         * Rewrite file paths in .pc file relative to libdir - should allow
+           for relocatable installs that work both from blib/ and real
+           installation location
+
 0.04    BUGFIXES:
          * Bake real installation libdir into built .pm file rather than
            build-time blib/ dir

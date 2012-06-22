@@ -5,10 +5,15 @@
 
 package Alien::unibilium;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
-use ExtUtils::PkgConfig;
-my $libdir = '@LIBDIR@';
+# libdir is the first @INC path that contains a pkgconfig/ dir
+my $libdir;
+foreach my $inc ( @INC ) {
+   $libdir = $inc and last if -d "$inc/pkgconfig";
+}
+defined $libdir or die "Cannot find my libdir containing pkgconfig";
+
 my $module = '@PKGCONFIG_MODULE@';
 
 =head1 NAME
@@ -50,7 +55,12 @@ sub _get_pkgconfig
    my ( $method, $self, @args ) = @_;
 
    local $ENV{PKG_CONFIG_PATH} = "$libdir/pkgconfig/";
-   return ExtUtils::PkgConfig->$method( $module, @args );
+   open my $eupc, "-|", "pkg-config", "--define-variable=libdir=$libdir", "--$method", @args, $module or
+      die "Cannot popen pkg-config - $!";
+
+   my $ret = do { local $/; <$eupc> }; chomp $ret;
+
+   return $ret;
 }
 
 sub libs
