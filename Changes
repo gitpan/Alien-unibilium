@@ -1,5 +1,10 @@
 Revision history for Alien-unibilium
 
+0.06    BUGFIXES:
+         * Fixes for cygwin:
+            + GNU make is just called "make"
+            + Close written .pc file before trying to rename() it
+
 0.05    BUGFIXES:
          * Don't hardcode libdir into .pm file, discover it by @INC search
          * Rewrite file paths in .pc file relative to libdir - should allow

@@ -5,7 +5,7 @@
 
 package Alien::unibilium;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 # libdir is the first @INC path that contains a pkgconfig/ dir
 my $libdir;

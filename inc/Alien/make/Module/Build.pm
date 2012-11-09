@@ -5,16 +5,16 @@ use warnings;
 
 use base qw( Module::Build );
 
-use ExtUtils::PkgConfig;
 use File::Basename qw( dirname );
 use File::Spec;
 use File::Path 2.07 qw( make_path );
 
 use constant SRCDIR => "src";
 
-# GNU make is called 'gmake' on most non-Linux platforms, gnumake on Dariwn
+# GNU make is called 'gmake' on most non-Linux platforms, gnumake on Dariwn, make on Cygwin
 use constant MAKE => ( $^O eq "linux" )  ? "make" :
                      ( $^O eq "darwin" ) ? "gnumake" :
+                     ( $^O eq "cygwin" ) ? "make" :
                                            "gmake";
 
 # GNU libtool is called 'glibtool' on Darwin
@@ -116,6 +116,10 @@ sub ACTION_code
             s{\Q$libdir\E}{\${libdir}}g;
             print { $out } $_;
          }
+
+         # Cygwin/Windows doesn't like it when you rename open files
+         close $in;
+         close $out;
 
          rename "$pcfile.new", $pcfile or die "Cannot rename $pcfile.new to $pcfile - $!";
       }
