@@ -1,5 +1,9 @@
 Revision history for Alien-unibilium
 
+0.07    CHANGES:
+         * A better implementation of the three 'check' style veersion testing
+           ExtUtils::PkgConfig methods
+
 0.06    BUGFIXES:
          * Fixes for cygwin:
             + GNU make is just called "make"

@@ -5,7 +5,9 @@
 
 package Alien::unibilium;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
+
+use POSIX qw( WEXITSTATUS );
 
 # libdir is the first @INC path that contains a pkgconfig/ dir
 my $libdir;
@@ -43,10 +45,17 @@ be obtained by calling
 
 =cut
 
+my %check_methods = map { $_ => 1 } qw(
+   atleast_version
+   exact_version
+   max_version
+);
+
 # I AM EVIL
 sub AUTOLOAD
 {
    our $AUTOLOAD =~ s/^.*:://;
+   return defined _get_pkgconfig( $AUTOLOAD, @_ ) if $check_methods{$AUTOLOAD};
    return _get_pkgconfig( $AUTOLOAD, @_ );
 }
 
@@ -54,12 +63,16 @@ sub _get_pkgconfig
 {
    my ( $method, $self, @args ) = @_;
 
+   $method =~ s/_/-/g;
+
    local $ENV{PKG_CONFIG_PATH} = "$libdir/pkgconfig/";
    open my $eupc, "-|", "pkg-config", "--define-variable=libdir=$libdir", "--$method", @args, $module or
       die "Cannot popen pkg-config - $!";
 
    my $ret = do { local $/; <$eupc> }; chomp $ret;
+   close $eupc;
 
+   return undef if WEXITSTATUS($?);
    return $ret;
 }
 
