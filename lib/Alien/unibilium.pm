@@ -5,7 +5,7 @@
 
 package Alien::unibilium;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 use POSIX qw( WEXITSTATUS );
 

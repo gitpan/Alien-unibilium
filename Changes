@@ -1,5 +1,9 @@
 Revision history for Alien-unibilium
 
+0.08    CHANGES:
+         * Try to detect GNU make and GNU libtool by probing, rather than
+           hardcoding what is the likely command on each OS type.
+
 0.07    CHANGES:
          * A better implementation of the three 'check' style veersion testing
            ExtUtils::PkgConfig methods

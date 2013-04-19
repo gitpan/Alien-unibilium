@@ -11,14 +11,35 @@ use File::Path 2.07 qw( make_path );
 
 use constant SRCDIR => "src";
 
-# GNU make is called 'gmake' on most non-Linux platforms, gnumake on Dariwn, make on Cygwin
-use constant MAKE => ( $^O eq "linux" )  ? "make" :
-                     ( $^O eq "darwin" ) ? "gnumake" :
-                     ( $^O eq "cygwin" ) ? "make" :
-                                           "gmake";
+BEGIN {
+   # GNU make is called 'gmake' on most non-Linux platforms, gnumake on Dariwn.
+   # Rather than hardcode it we'll try to identify a suitable command by inspection
+   foreach my $make (qw( make gmake gnumake )) {
+      no warnings 'exec';
+      my $output = `$make --version`;
+      next if $?;
+      next unless $output =~ m/^GNU Make /;
 
-# GNU libtool is called 'glibtool' on Darwin
-use constant MAKEARGS => ( ( $^O eq "darwin" ) ? ( "LIBTOOL=glibtool" ) : () );
+      constant->import( MAKE => $make );
+      last;
+   }
+   die "OS unsupported - unable to find GNU make\n" unless defined &MAKE;
+
+   # GNU libtool is called 'glibtool' on Darwin
+   foreach my $libtool (qw( libtool glibtool )) {
+      no warnings 'exec';
+      my $output = `$libtool --version`;
+      next if $?;
+      next unless $output =~ m/^.*\(GNU libtool\)/;
+
+      constant->import( LIBTOOL => $libtool );
+      last;
+   }
+   die "OS unsupported - unable to find GNU libtool\n" unless defined &LIBTOOL;
+
+}
+
+use constant MAKEARGS => ( ( LIBTOOL eq "libtool" ) ? ( "LIBTOOL=".LIBTOOL ) : () );
 
 __PACKAGE__->add_property( 'tarball' );
 __PACKAGE__->add_property( 'pkgconfig_module' );
