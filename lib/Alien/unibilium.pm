@@ -1,11 +1,11 @@
 #  You may distribute under the terms of either the GNU General Public License
 #  or the Artistic License (the same terms as Perl itself)
 #
-#  (C) Paul Evans, 2012 -- leonerd@leonerd.org.uk
+#  (C) Paul Evans, 2012-2013 -- leonerd@leonerd.org.uk
 
 package Alien::unibilium;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 use POSIX qw( WEXITSTATUS );
 
@@ -28,7 +28,7 @@ This CPAN distribution installs a local copy of F<unibilium>, primarily for
 use by the F<libtermkey> or the L<Term::Terminfo> distribution. It is not
 intended to be used directly.
 
-This module bundles F<unibilium> version v1.0.1.
+This module bundles F<unibilium> version v1.1.0.
 
 =head1 METHODS
 

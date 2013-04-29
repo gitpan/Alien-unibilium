@@ -1,5 +1,9 @@
 Revision history for Alien-unibilium
 
+0.09    CHANGES:
+         * Updated for unibilium v1.1.0
+         * Bugfix to LIBTOOL argument passing to make
+
 0.08    CHANGES:
          * Try to detect GNU make and GNU libtool by probing, rather than
            hardcoding what is the likely command on each OS type.

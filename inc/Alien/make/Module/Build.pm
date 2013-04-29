@@ -39,7 +39,7 @@ BEGIN {
 
 }
 
-use constant MAKEARGS => ( ( LIBTOOL eq "libtool" ) ? ( "LIBTOOL=".LIBTOOL ) : () );
+use constant MAKEARGS => "LIBTOOL=".LIBTOOL;
 
 __PACKAGE__->add_property( 'tarball' );
 __PACKAGE__->add_property( 'pkgconfig_module' );
