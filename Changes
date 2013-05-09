@@ -1,5 +1,9 @@
 Revision history for Alien-unibilium
 
+0.10    CHANGES:
+         * Repack upstream tarball after removing GNUmakefile that should not
+           have appeared
+
 0.09    CHANGES:
          * Updated for unibilium v1.1.0
          * Bugfix to LIBTOOL argument passing to make
