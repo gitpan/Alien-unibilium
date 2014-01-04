@@ -44,6 +44,37 @@ use constant MAKEARGS => "LIBTOOL=".LIBTOOL;
 __PACKAGE__->add_property( 'tarball' );
 __PACKAGE__->add_property( 'pkgconfig_module' );
 
+sub new
+{
+   my $class = shift;
+   my %args = @_;
+
+   my $use_bundled = 0;
+
+   $args{get_options}{bundled} = {
+      store => \$use_bundled,
+      type  => "+",
+   };
+
+   my $self = $class->SUPER::new( %args );
+
+   my $module = $self->pkgconfig_module;
+
+   $use_bundled = 1 if
+      !$use_bundled and system( "pkg-config", "--exists", $module ) != 0;
+
+   if( $use_bundled ) {
+      print "Building bundled source\n";
+   }
+   else {
+      print "Detected $module from pkg-config\n";
+   }
+
+   $self->notes( use_bundled => $use_bundled );
+
+   return $self;
+}
+
 sub _srcdir
 {
    my $self = shift;
@@ -83,6 +114,8 @@ sub ACTION_src
 {
    my $self = shift;
 
+   return unless $self->notes( 'use_bundled' );
+
    -d $self->_srcdir and return;
 
    my $tarball = $self->tarball;
@@ -109,11 +142,14 @@ sub ACTION_code
    my $incdir = File::Spec->catdir( $libdir, "include" );
    my $mandir = File::Spec->catdir( $blib, "libdoc" );
 
+   # All these at least must exist
+   -d $_ or mkdir $_ for $blib, $libdir;
+
    my $pkgconfig_module = $self->pkgconfig_module;
 
    my $buildstamp = $self->_stampfile( "build" );
 
-   unless( -f $buildstamp ) {
+   if( $self->notes( 'use_bundled' ) and !-f $buildstamp ) {
       $self->depends_on( 'src' );
 
       $self->make_in_srcdir( () );
@@ -151,8 +187,8 @@ sub ACTION_code
    my $dstfile = File::Spec->catfile( $blib, "lib", @module_file );
 
    unless( $self->up_to_date( $srcfile, $dstfile ) ) {
-
       my %replace = (
+         USE_BUNDLED      => $self->notes( 'use_bundled' ),
          PKGCONFIG_MODULE => $pkgconfig_module,
       );
 
@@ -176,7 +212,7 @@ sub cp_file_with_replacement
    my $dstfile = $args{dstfile};
    my $replace = $args{replace};
 
-   make_path( dirname( $dstfile ), 0, 0777 );
+   make_path( dirname( $dstfile ), { mode => 0777 } );
 
    open( my $inh,  "<", $srcfile ) or die "Cannot read $srcfile - $!";
    open( my $outh, ">", $dstfile ) or die "Cannot write $dstfile - $!";
@@ -191,6 +227,8 @@ sub ACTION_test
 {
    my $self = shift;
 
+   return unless $self->notes( 'use_bundled' );
+
    $self->depends_on( "code" );
 
    $self->make_in_srcdir( "test" );
@@ -200,11 +238,13 @@ sub ACTION_clean
 {
    my $self = shift;
 
-   if( -d $self->_srcdir ) {
-      $self->make_in_srcdir( "clean" );
-   }
+   if( $self->notes( 'use_bundled' ) ) {
+      if( -d $self->_srcdir ) {
+         $self->make_in_srcdir( "clean" );
+      }
 
-   unlink( $self->_stampfile( "build" ) );
+      unlink( $self->_stampfile( "build" ) );
+   }
 
    $self->SUPER::ACTION_clean;
 }

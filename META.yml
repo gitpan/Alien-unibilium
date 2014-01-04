@@ -14,7 +14,7 @@ configure_requires:
   File::Spec: 0
   Module::Build: 0
 dynamic_config: 1
-generated_by: 'Module::Build version 0.4001, CPAN::Meta::Converter version 2.120921'
+generated_by: 'Module::Build version 0.4202, CPAN::Meta::Converter version 2.133380'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -23,9 +23,9 @@ name: Alien-unibilium
 provides:
   Alien::unibilium:
     file: lib/Alien/unibilium.pm
-    version: 0.10
+    version: 0.11
 requires:
   ExtUtils::PkgConfig: 0
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.10
+version: 0.11

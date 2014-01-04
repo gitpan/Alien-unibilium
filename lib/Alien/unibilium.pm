@@ -1,22 +1,25 @@
 #  You may distribute under the terms of either the GNU General Public License
 #  or the Artistic License (the same terms as Perl itself)
 #
-#  (C) Paul Evans, 2012-2013 -- leonerd@leonerd.org.uk
+#  (C) Paul Evans, 2012-2014 -- leonerd@leonerd.org.uk
 
 package Alien::unibilium;
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 use POSIX qw( WEXITSTATUS );
 
+my $module = '@PKGCONFIG_MODULE@';
+my $use_bundled = '@USE_BUNDLED@';
+
 # libdir is the first @INC path that contains a pkgconfig/ dir
 my $libdir;
-foreach my $inc ( @INC ) {
-   $libdir = $inc and last if -d "$inc/pkgconfig";
+if( $use_bundled ) {
+   foreach my $inc ( @INC ) {
+      $libdir = $inc and last if -d "$inc/pkgconfig";
+   }
+   defined $libdir or die "Cannot find my libdir containing pkgconfig";
 }
-defined $libdir or die "Cannot find my libdir containing pkgconfig";
-
-my $module = '@PKGCONFIG_MODULE@';
 
 =head1 NAME
 
@@ -24,9 +27,13 @@ C<Alien::unibilium> - L<Alien> wrapping for F<unibilium>
 
 =head1 DESCRIPTION
 
-This CPAN distribution installs a local copy of F<unibilium>, primarily for
-use by the F<libtermkey> or the L<Term::Terminfo> distribution. It is not
-intended to be used directly.
+This CPAN distribution wraps the C library F<unibilium> in a wrapper suitable
+to drive CPAN and other Perl-related build infrastructure.
+
+If the C library is already installed and known by F<pkg-config>, this module
+provides a simple access to its configuration. If not, the process of
+installing it will install a locally-bundled copy of the library into perl's
+arch-specific library directory.
 
 This module bundles F<unibilium> version v1.1.0.
 
@@ -65,8 +72,12 @@ sub _get_pkgconfig
 
    $method =~ s/_/-/g;
 
-   local $ENV{PKG_CONFIG_PATH} = "$libdir/pkgconfig/";
-   open my $eupc, "-|", "pkg-config", "--define-variable=libdir=$libdir", "--$method", @args, $module or
+   unshift @args, "--$method";
+
+   local $ENV{PKG_CONFIG_PATH} = "$libdir/pkgconfig/" if $use_bundled;
+   unshift @args, "--define-variable=libdir=$libdir" if $use_bundled;
+
+   open my $eupc, "-|", "pkg-config", @args, $module or
       die "Cannot popen pkg-config - $!";
 
    my $ret = do { local $/; <$eupc> }; chomp $ret;
@@ -79,7 +90,7 @@ sub _get_pkgconfig
 sub libs
 {
    # Append RPATH so that runtime linking actually works
-   return _get_pkgconfig( libs => @_ ) . " -Wl,-R$libdir";
+   return _get_pkgconfig( libs => @_ ) . ( $use_bundled ? " -Wl,-R$libdir" : "" );
 }
 
 =head1 SEE ALSO

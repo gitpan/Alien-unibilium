@@ -1,5 +1,9 @@
 Revision history for Alien-unibilium
 
+0.11    2014/01/04 22:12:06
+        [CHANGES]
+         * Allow wrapping of existing system library or installing bundled one
+
 0.10    CHANGES:
          * Repack upstream tarball after removing GNUmakefile that should not
            have appeared
